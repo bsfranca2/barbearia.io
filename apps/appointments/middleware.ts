@@ -32,7 +32,6 @@ export async function middleware(req: NextRequest) {
   const subdomain = getValidSubdomain(host);
   if (subdomain) {
     // Subdomain available, rewriting
-    console.log(`>>> Rewriting: ${url.pathname} to /${subdomain}${url.pathname}`);
     url.pathname = `/${subdomain}${url.pathname}`;
   }
 
