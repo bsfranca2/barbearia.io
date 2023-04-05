@@ -34,3 +34,5 @@ if (process.env.NODE_ENV === "production") {
 export const getConnection = () => {
   return db;
 };
+
+export { sql } from "kysely";

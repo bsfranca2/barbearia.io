@@ -7,6 +7,7 @@ type PageProps = {
 };
 
 export default async function Page({ params }: PageProps) {
+  /// TODO: Show barber availability
   const barbers = await getConnection()
     .selectFrom("Employee")
     .select("Employee.id")

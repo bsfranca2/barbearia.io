@@ -4,5 +4,6 @@ export interface Appointment {
   id: Generated<number>;
   customerId: number;
   employeeServiceId: number;
-  duration: unknown;
+  duration: string;
+  date: Date;
 }

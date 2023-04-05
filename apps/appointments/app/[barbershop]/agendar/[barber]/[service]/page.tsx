@@ -1,21 +1,31 @@
 import Link from "next/link";
+import { format } from "date-fns";
 
-export default function Page() {
+type PageProps = {
+  params: {
+    barbershop: string;
+    barber: string;
+    service: string;
+  };
+};
+
+export default function Page({ params }: PageProps) {
+  const { barber, service } = params;
+
   // TODO: fetch dates from API
+  const dates = [new Date(2023, 3, 3), new Date(2023, 3, 4)];
 
   return (
     <section>
       <h3>Escolher dia</h3>
       <ul>
-        <li>
-          <Link href="/agendar/fulano/corte-1/10">01/01</Link>
-        </li>
-        <li>
-          <Link href="/agendar/fulano/corte-1/10">02/01</Link>
-        </li>
-        <li>
-          <Link href="/agendar/fulano/corte-1/10">03/01</Link>
-        </li>
+        {dates.map((date) => (
+          <li key={date.getTime()}>
+            <Link href={`/agendar/${barber}/${service}/${format(date, "yyyy-MM-dd")}`}>
+              {format(date, "dd/MM/yyyy")}
+            </Link>
+          </li>
+        ))}
       </ul>
     </section>
   );

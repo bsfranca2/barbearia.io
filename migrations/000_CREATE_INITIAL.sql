@@ -66,13 +66,14 @@ CREATE TABLE `Employee` (
 CREATE TABLE `WorkingHours` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
   `employeeId` int unsigned NOT NULL,
-  `dayOfWeek` date NOT NULL,
+  `dayOfWeek` tinyint unsigned NOT NULL,
   `startAt` time NOT NULL,
   `endAt` time NOT NULL,
   -- `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   -- `updated_at` timestamp DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `idx_working_hours_employee_id` (`employeeId`) -- CONSTRAINT `fk_working_time_employee_id` FOREIGN KEY (`employee_id`) REFERENCES `employees` (`id`)
+  -- TODO: Add check for day of week
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8;
 
 CREATE TABLE `Category` (
@@ -134,6 +135,7 @@ CREATE TABLE `Appointment` (
   `customerId` int unsigned NOT NULL,
   `employeeServiceId` int unsigned NOT NULL,
   `duration` time NOT NULL,
+  `date` timestamp NOT NULL,
   -- `status` enum('pending','confirmed','canceled') NOT NULL DEFAULT 'pending',
   -- `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   -- `updated_at` timestamp DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
