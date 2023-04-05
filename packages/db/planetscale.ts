@@ -3,17 +3,34 @@ import { PlanetScaleDialect } from "kysely-planetscale";
 
 import type { Database as DatabaseModels } from "./models";
 
-const db = new Kysely<DatabaseModels>({
-  dialect: new PlanetScaleDialect({
-    host: process.env.DATABASE_HOST,
-    username: process.env.DATABASE_USERNAME,
-    password: process.env.DATABASE_PASSWORD,
-    fetch
-  }),
-});
+type Database = Kysely<DatabaseModels>;
 
-export const getConnection = (): Database => {
-  return db;
+const createInstance = () =>
+  new Kysely<DatabaseModels>({
+    dialect: new PlanetScaleDialect({
+      host: process.env.DATABASE_HOST,
+      username: process.env.DATABASE_USERNAME,
+      password: process.env.DATABASE_PASSWORD,
+      fetch,
+    }),
+    // log: ["query", "error"],
+  });
+
+let db: Database;
+
+const globalForDB = globalThis as unknown as {
+  db: Database;
 };
 
-export type Database = typeof db;
+if (process.env.NODE_ENV === "production") {
+  db = createInstance();
+} else {
+  if (!globalForDB.db) {
+    globalForDB.db = createInstance();
+  }
+  db = globalForDB.db;
+}
+
+export const getConnection = () => {
+  return db;
+};

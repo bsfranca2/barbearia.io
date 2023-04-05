@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import { getBarbershopBySlug } from "~/utils/db";
+import { getBarbershopBySlug, getBarbershopSlugList } from "~/utils/db";
 
 type PageProps = {
   params: {
@@ -44,4 +44,13 @@ export default async function Page({ params }: PageProps) {
       </footer>
     </>
   );
+}
+
+export const revalidate = Infinity;
+
+export const dynamicParams = false;
+
+export async function generateStaticParams() {
+  const barbershops = await getBarbershopSlugList();
+  return barbershops.map((barbershop) => ({ barbershop: barbershop.slug }));
 }

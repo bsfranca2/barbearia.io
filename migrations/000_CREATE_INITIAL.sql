@@ -28,6 +28,7 @@ CREATE TABLE `Address` (
 CREATE TABLE `Barbershop` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(100) NOT NULL,
+  -- TODO: Slug must be unique
   `slug` varchar(20) NOT NULL,
   `addressId` int unsigned DEFAULT NULL,
   `phone` varchar(20) DEFAULT NULL,
