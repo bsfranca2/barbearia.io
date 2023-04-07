@@ -13,7 +13,7 @@ const createInstance = () =>
       password: process.env.DATABASE_PASSWORD,
       fetch,
     }),
-    // log: ["query", "error"],
+    log: process.env.NODE_ENV !== "production" ? ["query", "error"] : undefined,
   });
 
 let db: Database;
