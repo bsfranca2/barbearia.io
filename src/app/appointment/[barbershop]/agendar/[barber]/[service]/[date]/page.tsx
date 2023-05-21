@@ -11,14 +11,10 @@ const INTERVAL_TIME = 10;
 const setTime = (date: Date, time: string) => {
   const [hour, minute] = time.split(":");
   const dateClone = new Date(date);
-  dateClone.setHours(parseInt(hour));
-  dateClone.setMinutes(parseInt(minute));
+  // TODO: check non-null assertion
+  dateClone.setHours(parseInt(hour!));
+  dateClone.setMinutes(parseInt(minute!));
   return dateClone;
-};
-
-const timeToInteger = (time: string) => {
-  const [hour, minute] = time.split(":");
-  return parseInt(hour) * 60 + parseInt(minute);
 };
 
 async function getTimeSlots(options: { barberId: number; date: Date }) {
@@ -55,9 +51,7 @@ async function getTimeSlots(options: { barberId: number; date: Date }) {
   const availableTimeSlots = timeSlots.filter((timeSlot) => {
     const isAvailable = appointments.every((appointment) => {
       const diff = Math.abs(
-        appointment.date.getTime() +
-          timeToInteger(appointment.duration) -
-          timeSlot.getTime()
+        appointment.date.getTime() + appointment.duration - timeSlot.getTime()
       );
       return diff > INTERVAL_TIME * 60 * 1000;
     });
@@ -79,7 +73,8 @@ type PageProps = {
 export default async function Page({ params }: PageProps) {
   const barberId = parseInt(params.barber);
   const [year, month, day] = params.date.split("-").map((x) => parseInt(x));
-  const date = new Date(year, month - 1, day);
+  // TODO: check non-null assertion
+  const date = new Date(year!, month! - 1, day);
 
   const timeSlots = await getTimeSlots({ barberId, date });
 
