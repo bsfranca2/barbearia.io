@@ -1,6 +1,5 @@
-import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
-// import { getValidSubdomain } from '@/utils/subdomain';
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 
 export const config = {
   matcher: [
@@ -11,41 +10,38 @@ export const config = {
      * 3. /examples (inside /public)
      * 4. all root files inside /public (e.g. /favicon.ico)
      */
-    "/((?!api/|_next/|_static/|examples/|[\\w-]+\\.\\w+).*)",
+    "/((?!api/|_next/|_static/|dashboard/|examples/|[\\w-]+\\.\\w+).*)",
   ],
 };
-
-export const getValidSubdomain = (host?: string | null) => {
-  let subdomain: string | null = null;
-  if (!host && typeof window !== 'undefined') {
-    // On client side, get the host from window
-    host = window.location.host;
-  }
-  if (host && host.includes('.')) {
-    const candidate = host.split('.')[0];
-    if (candidate && !candidate.includes('localhost')) {
-      // Valid candidate
-      subdomain = candidate;
-    }
-  }
-  return subdomain;
-};
-
-// RegExp for public files
-const PUBLIC_FILE = /\.(.*)$/; // Files
 
 export function middleware(req: NextRequest) {
   // Clone the URL
   const url = req.nextUrl.clone();
 
-  // Skip public files
-  if (PUBLIC_FILE.test(url.pathname) || url.pathname.includes('_next')) return;
+  // Get hostname of request (e.g. demo.vercel.pub, demo.localhost:3000)
+  const hostname = req.headers.get("host") || "foo.barbearia.io";
 
-  const host = req.headers.get('host');
-  const subdomain = getValidSubdomain(host);
-  if (subdomain) {
+  // Get the pathname of the request (e.g. /, /about, /blog/first-post)
+  // const path = url.pathname;
+
+  /*  You have to replace ".vercel.pub" with your own domain if you deploy this example under your domain.
+      You can also use wildcard subdomains on .vercel.app links that are associated with your Vercel team slug
+      in this case, our team slug is "platformize", thus *.platformize.vercel.app works. Do note that you'll
+      still need to add "*.platformize.vercel.app" as a wildcard domain on your Vercel dashboard. */
+  const currentHost =
+    process.env.NODE_ENV === "production" && process.env.VERCEL === "1"
+      ? hostname
+          .replace(`.barbearia.io`, "")
+          .replace(`.barbearia-io.vercel.app`, "")
+      : hostname.replace(`.localhost:3000`, "");
+  if (
+    !["barbearia.io", "localhost:3000", "vercel.app"].some(
+      (host) => host.includes(currentHost)
+    )
+  ) {
+    console.log("path rewrite: ", url.href);
     // Subdomain available, rewriting
-    url.pathname = `/appointment/${subdomain}${url.pathname}`;
+    url.pathname = `/appointment/${currentHost}${url.pathname}`;
   }
 
   return NextResponse.rewrite(url);
