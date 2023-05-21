@@ -4,6 +4,7 @@ export function useDisclosure(
   initialState = false,
   callbacks?: { onOpen?(): void; onClose?(): void }
 ) {
+  // eslint-disable-next-line @typescript-eslint/unbound-method
   const { onOpen, onClose } = callbacks || {};
   const [opened, setOpened] = useState(initialState);
 

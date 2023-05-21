@@ -34,7 +34,7 @@ export const getValidSubdomain = (host?: string | null) => {
 // RegExp for public files
 const PUBLIC_FILE = /\.(.*)$/; // Files
 
-export async function middleware(req: NextRequest) {
+export function middleware(req: NextRequest) {
   // Clone the URL
   const url = req.nextUrl.clone();
 
