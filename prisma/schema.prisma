@@ -1,0 +1,193 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["jsonProtocol"]
+  relationMode    = "prisma"
+}
+
+datasource db {
+  provider          = "mysql"
+  url               = env("DATABASE_URL")
+  shadowDatabaseUrl = env("DATABASE_URL")
+}
+
+model State {
+  id     Int    @id @default(autoincrement()) @db.TinyInt
+  name   String @db.VarChar(50)
+  cities City[]
+}
+
+model City {
+  id        Int       @id @default(autoincrement()) @db.SmallInt
+  name      String    @db.VarChar(100)
+  stateId   Int       @db.TinyInt
+  state     State     @relation(fields: [stateId], references: [id])
+  addresses Address[]
+}
+
+model Address {
+  id           Int          @id @default(autoincrement())
+  cep          String       @db.VarChar(8)
+  cityId       Int          @db.SmallInt
+  city         City         @relation(fields: [cityId], references: [id])
+  neighborhood String       @db.VarChar(100)
+  street       String       @db.VarChar(100)
+  number       String       @db.VarChar(10)
+  complement   String?      @db.VarChar(100)
+  // location point?
+  barbershops  Barbershop[]
+}
+
+model Barbershop {
+  id             Int              @id @default(autoincrement())
+  name           String           @db.VarChar(100)
+  slug           String           @db.VarChar(20)
+  addressId      Int?
+  address        Address?         @relation(fields: [addressId], references: [id])
+  phone          String?          @db.VarChar(20)
+  email          String?          @db.VarChar(255)
+  description    String?          @db.Text
+  logo           String?          @db.VarChar(255)
+  employees      Employee[]
+  categories     Category[]
+  customers      Customer[]
+  // cnpj String @db.VarChar(14)
+  // createdAt DateTime @default(now())
+  // updatedAt DateTime @updatedAt
+  // deletedAt DateTime?
+  BarbershopUser BarbershopUser[]
+}
+
+model Role {
+  id        Int        @id @default(autoincrement()) @db.TinyInt
+  name      String     @db.VarChar(50)
+  employees Employee[]
+}
+
+model Employee {
+  id           Int               @id @default(autoincrement())
+  name         String            @db.VarChar(100)
+  email        String            @db.VarChar(255)
+  phone        String            @db.VarChar(20)
+  picture      String?           @db.VarChar(255)
+  roleId       Int               @db.TinyInt
+  role         Role?             @relation(fields: [roleId], references: [id])
+  barbershopId Int
+  barbershop   Barbershop        @relation(fields: [barbershopId], references: [id])
+  workingHours WorkingHours[]
+  services     EmployeeService[]
+  // createdAt DateTime @default(now())
+  // updatedAt DateTime @updatedAt
+}
+
+model WorkingHours {
+  id         Int      @id @default(autoincrement())
+  employeeId Int
+  employee   Employee @relation(fields: [employeeId], references: [id])
+  dayOfWeek  Int      @db.TinyInt
+  startAt    DateTime @db.Time()
+  endAt      DateTime @db.Time()
+  // createdAt DateTime @default(now())
+  // updatedAt DateTime @updatedAt
+}
+
+model Category {
+  id           Int        @id @default(autoincrement()) @db.TinyInt
+  name         String     @db.VarChar(50)
+  barbershopId Int
+  barbershop   Barbershop @relation(fields: [barbershopId], references: [id])
+  services     Service[]
+}
+
+model Service {
+  id           Int               @id @default(autoincrement())
+  barbershopId Int
+  categoryId   Int?
+  category     Category?         @relation(fields: [categoryId], references: [id])
+  name         String            @db.VarChar(100)
+  description  String?           @db.Text
+  duration     Int
+  price        Decimal           @db.Decimal(10, 2)
+  picture      String?           @db.VarChar(255)
+  employees    EmployeeService[]
+  // createdAt DateTime @default(now())
+  // updatedAt DateTime @updatedAt
+}
+
+model EmployeeService {
+  id           Int           @id @default(autoincrement())
+  employeeId   Int
+  employee     Employee      @relation(fields: [employeeId], references: [id])
+  serviceId    Int
+  service      Service       @relation(fields: [serviceId], references: [id])
+  duration     Int?
+  price        Decimal?      @db.Decimal(10, 2)
+  appointments Appointment[]
+  // createdAt DateTime @default(now())
+  // updatedAt DateTime @updatedAt
+}
+
+model Customer {
+  id           Int           @id @default(autoincrement())
+  barbershopId Int
+  barbershop   Barbershop    @relation(fields: [barbershopId], references: [id])
+  name         String        @db.VarChar(100)
+  email        String?       @db.VarChar(255)
+  phone        String?       @db.VarChar(20)
+  picture      String?       @db.VarChar(255)
+  appointments Appointment[]
+  // createdAt DateTime @default(now())
+  // updatedAt DateTime @updatedAt
+}
+
+model Appointment {
+  id                Int             @id @default(autoincrement())
+  customerId        Int
+  customer          Customer        @relation(fields: [customerId], references: [id])
+  employeeServiceId Int
+  employeeService   EmployeeService @relation(fields: [employeeServiceId], references: [id])
+  duration          Int
+  date              DateTime        @db.Timestamp()
+  // status enum()
+  // createdAt DateTime @default(now())
+  // updatedAt DateTime @updatedAt
+}
+
+model User {
+  id              Int              @id @default(autoincrement())
+  entityId        Int
+  name            String           @db.VarChar(100)
+  email           String           @db.VarChar(255)
+  emailVerifiedAt DateTime?
+  phone           String           @db.VarChar(20)
+  phoneVerifiedAt DateTime?
+  BarbershopUser  BarbershopUser[]
+}
+
+model BarbershopUser {
+  barbershopId Int
+  barbershop   Barbershop @relation(fields: [barbershopId], references: [id])
+  userId       Int
+  user         User       @relation(fields: [userId], references: [id])
+  entityType   String
+
+  @@id([barbershopId, userId])
+}
+
+// model Account {
+//   id                Int       @id @default(autoincrement())
+//   userId            Int
+//   userType          String
+//   type              String
+//   provider          String
+//   providerAccountId String
+//   refreshToken      String?
+//   accessToken       String?
+//   expiresAt         DateTime?
+//   tokenType         String?
+//   scope             String?
+//   idToken           String?
+//   sessionState      String?
+// }
