@@ -1,6 +1,6 @@
 import Link from "next/link";
-
-import { getBarbershopBySlug, getBarbershopSlugList } from "~/utils/db";
+import { getBarbershopBySlugUseCase } from "~/lib/use-cases/get-barbershop-by-slug";
+import { buttonVariants } from "~/components/ui/button";
 
 type PageProps = {
   params: {
@@ -10,7 +10,7 @@ type PageProps = {
 
 export default async function Page({ params }: PageProps) {
   const { barbershop: slug } = params;
-  const barbershop = await getBarbershopBySlug(slug);
+  const barbershop = await getBarbershopBySlugUseCase({ slug });
 
   if (!barbershop) {
     return <h1>Barbearia não encontrada</h1>;
@@ -18,18 +18,21 @@ export default async function Page({ params }: PageProps) {
 
   return (
     <>
-      <header>
-        <h1>{barbershop.name}</h1>
-      </header>
-      <main>
-        <h3>Vamos agendar sua proxima visita?</h3>
-        <ul>
-          <li>
-            <Link href="/agendar">Agendar horário</Link>
-          </li>
-        </ul>
+      <header>{/* Logo */}</header>
+      <main className="mx-auto py-6 lg:max-w-2xl">
+        <div className="mb-6">
+          <h2 className="scroll-m-20 text-3xl font-semibold tracking-tight transition-colors">
+            {barbershop.name}
+          </h2>
+          <p className="text-muted-foreground">
+            Vamos agendar sua proxima visita?
+          </p>
+        </div>
+        <Link href="/agendar" className={buttonVariants()}>
+          Agendar horário
+        </Link>
       </main>
-      <footer>
+      <footer className="hidden">
         <ul>
           <li>
             <a href="#">Notificações</a>
@@ -46,11 +49,11 @@ export default async function Page({ params }: PageProps) {
   );
 }
 
-export const revalidate = Infinity;
+// export const revalidate = Infinity;
 
-export const dynamicParams = false;
+// export const dynamicParams = false;
 
-export async function generateStaticParams() {
-  const barbershops = await getBarbershopSlugList();
-  return barbershops.map((barbershop) => ({ barbershop: barbershop.slug }));
-}
+// export async function generateStaticParams() {
+//   const barbershops = await getBarbershopSlugList();
+//   return barbershops.map((barbershop) => ({ barbershop: barbershop.slug }));
+// }

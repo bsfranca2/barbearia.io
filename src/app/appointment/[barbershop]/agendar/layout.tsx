@@ -3,10 +3,10 @@ import Link from "next/link";
 export default function Layout({ children }: React.PropsWithChildren) {
   return (
     <>
-      <aside>
+      <aside className="mx-auto pt-6 lg:max-w-2xl">
         <Link href="/">Voltar</Link>
       </aside>
-      {children}
+      <main className="mx-auto py-6 lg:max-w-2xl">{children}</main>
     </>
   );
 }

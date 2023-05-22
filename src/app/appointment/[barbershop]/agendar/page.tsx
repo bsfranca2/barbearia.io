@@ -1,31 +1,41 @@
+import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 
-import { getConnection } from "~/utils/db";
+import { getBarbersUseCase } from "~/lib/use-cases/get-barbers";
+import { buttonVariants } from "~/components/ui/button";
 
 type PageProps = {
   params: { barbershop: string };
 };
 
 export default async function Page({ params }: PageProps) {
-  /// TODO: Show barber availability
-  const barbers = await getConnection()
-    .selectFrom("Employee")
-    .select("Employee.id")
-    .select("Employee.name")
-    .innerJoin("Barbershop", "Barbershop.id", "Employee.barbershopId")
-    .where("Barbershop.slug", "=", params.barbershop)
-    .execute();
+  const barbers = await getBarbersUseCase({
+    barbershopSlug: params.barbershop,
+  });
 
   return (
-    <main>
-      <h3>Escolher profissional</h3>
-      <ul>
-        {barbers.map((barber) => (
-          <li key={barber.id}>
-            <Link href={`/agendar/${barber.id}`}>{barber.name}</Link>
-          </li>
-        ))}
-      </ul>
-    </main>
+    <>
+      <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight">
+        Escolha um profissional
+      </h3>
+      <div className="pt-6">
+        <ul className="space-y-4">
+          {barbers.map((barber) => (
+            <li
+              key={barber.id}
+              className="flex flex-row items-center justify-between rounded-lg border border-input px-3 py-2.5"
+            >
+              <p className="font-medium">{barber.name}</p>
+              <Link
+                href={`/agendar/${barber.id}`}
+                className={buttonVariants({ variant: "secondary" })}
+              >
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </>
   );
 }
