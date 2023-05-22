@@ -10,6 +10,7 @@ export const employeesRouter = createTRPCRouter({
       .innerJoin("Role", "Employee.roleId", "Role.id")
       .select("Role.name as roleName")
       .where("Employee.barbershopId", "=", ctx.session.user.barbershopId)
+      .where("Employee.deletedAt", "is", null)
       .execute();
   }),
 

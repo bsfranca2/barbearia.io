@@ -17,6 +17,8 @@ export interface Employee {
   picture: string | null;
   roleId: number;
   barbershopId: number;
+  archivedAt: Date | null;
+  deletedAt: Date | null;
 }
 
 export interface WorkingHours {

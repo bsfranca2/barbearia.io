@@ -10,5 +10,7 @@ export const getBarbersActiveDB: GetBarbersActive = async (barbershopSlug) => {
     .selectAll("Employee")
     .innerJoin("Barbershop", "Barbershop.id", "Employee.barbershopId")
     .where("Barbershop.slug", "=", barbershopSlug)
+    .where("Employee.archivedAt", "is", null)
+    .where("Employee.deletedAt", "is", null)
     .execute();
 };
