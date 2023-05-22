@@ -65,28 +65,28 @@ export function NewEmployeeForm({
       workingHours: [
         {
           dayOfWeek: 1,
-          startAt: "08:00",
-          endAt: "18:00",
+          startTime: "08:00",
+          endTime: "18:00",
         },
         {
           dayOfWeek: 2,
-          startAt: "08:00",
-          endAt: "18:00",
+          startTime: "08:00",
+          endTime: "18:00",
         },
         {
           dayOfWeek: 3,
-          startAt: "08:00",
-          endAt: "18:00",
+          startTime: "08:00",
+          endTime: "18:00",
         },
         {
           dayOfWeek: 4,
-          startAt: "08:00",
-          endAt: "18:00",
+          startTime: "08:00",
+          endTime: "18:00",
         },
         {
           dayOfWeek: 5,
-          startAt: "08:00",
-          endAt: "18:00",
+          startTime: "08:00",
+          endTime: "18:00",
         },
       ],
     },

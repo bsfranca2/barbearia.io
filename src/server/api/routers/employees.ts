@@ -51,8 +51,8 @@ export const employeesRouter = createTRPCRouter({
             input.workingHours.map((workingHours) => ({
               employeeId: employeeId,
               dayOfWeek: workingHours.dayOfWeek,
-              startAt: workingHours.startAt,
-              endAt: workingHours.endAt,
+              startTime: workingHours.startTime,
+              endTime: workingHours.endTime,
             }))
           )
           .execute();

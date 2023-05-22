@@ -22,7 +22,7 @@ export const createEmployeeSchema = z.object({
     })
   ),
   workingHours: z.array(
-    z.object({ dayOfWeek: z.number(), startAt: z.string(), endAt: z.string() })
+    z.object({ dayOfWeek: z.number(), startTime: z.string(), endTime: z.string() })
   ),
 });
 export type CreateEmployeeInput = z.infer<typeof createEmployeeSchema>;
