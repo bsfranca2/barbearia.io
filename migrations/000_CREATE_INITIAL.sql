@@ -44,28 +44,21 @@ CREATE TABLE `Barbershop` (
   -- CONSTRAINT `fk_barbershops_address_id` FOREIGN KEY (`address_id`) REFERENCES `addresses` (`id`)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8;
 
-CREATE TABLE `Role` (
-  `id` tinyint unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(50) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE = InnoDB DEFAULT CHARSET = utf8;
-
 CREATE TABLE `Employee` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(100) NOT NULL,
   `email` varchar(255) NOT NULL,
   `phone` varchar(20) NOT NULL,
   `picture` varchar(255) DEFAULT NULL,
-  `roleId` tinyint unsigned NOT NULL,
   `barbershopId` int unsigned NOT NULL,
+  `roles` varchar(255) DEFAULT NULL,
   `archivedAt` datetime DEFAULT NULL,
   `deletedAt` datetime DEFAULT NULL,
   -- `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   -- `updated_at` timestamp DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
-  KEY `idx_employee_role_id` (`roleId`),
-  KEY `idx_employee_barbershop_id` (`barbershopId`)
-  KEY `idx_employee_archived_at` (`archivedAt`)
+  KEY `idx_employee_barbershop_id` (`barbershopId`),
+  KEY `idx_employee_archived_at` (`archivedAt`),
   KEY `idx_employee_deleted_at` (`deletedAt`)
   -- CONSTRAINT `fk_employees_role_id` FOREIGN KEY (`role_id`) REFERENCES `roles` (`id`),
   -- CONSTRAINT `fk_employees_barbershop_id` FOREIGN KEY (`barbershop_id`) REFERENCES `barbershops` (`id`)

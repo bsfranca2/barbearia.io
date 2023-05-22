@@ -9,16 +9,21 @@ export interface Barbershop {
   logo: string | null;
 }
 
+export enum Roles {
+  Admin = "ADMIN",
+  Barber = "BARBER",
+}
+
 export interface Employee {
   id: number;
   name: string;
   email: string;
   phone: string;
   picture: string | null;
-  roleId: number;
   barbershopId: number;
   archivedAt: Date | null;
   deletedAt: Date | null;
+  roles: Roles[];
 }
 
 export interface WorkingHours {

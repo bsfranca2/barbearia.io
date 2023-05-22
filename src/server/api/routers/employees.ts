@@ -1,31 +1,40 @@
 import { sql } from "kysely";
 import { createEmployeeSchema } from "~/lib/validations/employee";
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
+import { Roles } from "~/types/barbershop";
 
 export const employeesRouter = createTRPCRouter({
   getAll: protectedProcedure.query(async ({ ctx }) => {
-    return await ctx.db
+    const employees = await ctx.db
       .selectFrom("Employee")
       .selectAll("Employee")
-      .innerJoin("Role", "Employee.roleId", "Role.id")
-      .select("Role.name as roleName")
       .where("Employee.barbershopId", "=", ctx.session.user.barbershopId)
       .where("Employee.deletedAt", "is", null)
       .execute();
+    return employees.map((employee) => ({
+      ...employee,
+      roles: (employee.roles?.split(",") as Roles[]) ?? [],
+    }));
   }),
 
   create: protectedProcedure
     .input(createEmployeeSchema)
     .mutation(async ({ ctx, input }) => {
       await ctx.db.transaction().execute(async (trx) => {
-        // TODO: role must be a array of roles
+        const roles = [];
+        if (input.isManager) {
+          roles.push("ADMIN");
+        }
+        if (input.isBarber) {
+          roles.push("BARBER");
+        }
         await trx
           .insertInto("Employee")
           .values({
             name: input.name,
             email: input.email,
             phone: input.phone,
-            roleId: 1,
+            roles: roles.join(","),
             barbershopId: ctx.session.user.barbershopId,
           })
           .execute();
@@ -34,7 +43,8 @@ export const employeesRouter = createTRPCRouter({
         const employeeId = Number((rows[0] as { id: string }).id);
 
         // TODO: implement custom duration and price
-        await trx
+        if (input.services.length) {
+          await trx
           .insertInto("EmployeeService")
           .values(
             input.services.map((service) => ({
@@ -45,8 +55,10 @@ export const employeesRouter = createTRPCRouter({
             }))
           )
           .execute();
+        }
 
-        await trx
+        if (input.workingHours.length) {
+          await trx
           .insertInto("WorkingHours")
           .values(
             input.workingHours.map((workingHours) => ({
@@ -57,6 +69,7 @@ export const employeesRouter = createTRPCRouter({
             }))
           )
           .execute();
+        }
       });
       return { success: true };
     }),

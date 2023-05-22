@@ -38,13 +38,18 @@ export interface Role {
   name: string;
 }
 
+type EmployeeDB = Omit<Employee, "id" | "roles"> & {
+  id: Generated<number>;
+  roles: string | null;
+};
+
 export interface Database {
   State: State & { id: Generated<number> };
   City: City;
   Address: Address & { id: Generated<number> };
   Barbershop: Barbershop & { id: Generated<number> };
   Role: Role;
-  Employee: Employee & { id: Generated<number> };
+  Employee: EmployeeDB;
   WorkingHours: WorkingHours & { id: Generated<number> };
   Category: Category;
   Service: Service & { id: Generated<number> };
