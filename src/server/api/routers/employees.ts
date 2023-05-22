@@ -29,15 +29,30 @@ export const employeesRouter = createTRPCRouter({
           })
           .execute();
 
+        const { rows } = await sql`select LAST_INSERT_ID() as id`.execute(trx);
+        const employeeId = Number((rows[0] as { id: string }).id);
+
         // TODO: implement custom duration and price
         await trx
           .insertInto("EmployeeService")
           .values(
             input.services.map((service) => ({
-              employeeId: sql`LAST_INSERT_ID()`,
+              employeeId: employeeId,
               serviceId: service.id,
               duration: null, // service.duration
               price: null, // service.price
+            }))
+          )
+          .execute();
+
+        await trx
+          .insertInto("WorkingHours")
+          .values(
+            input.workingHours.map((workingHours) => ({
+              employeeId: employeeId,
+              dayOfWeek: workingHours.dayOfWeek,
+              startAt: workingHours.startAt,
+              endAt: workingHours.endAt,
             }))
           )
           .execute();

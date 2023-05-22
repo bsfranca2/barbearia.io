@@ -21,5 +21,8 @@ export const createEmployeeSchema = z.object({
       price: z.number(),
     })
   ),
+  workingHours: z.array(
+    z.object({ dayOfWeek: z.number(), startAt: z.string(), endAt: z.string() })
+  ),
 });
 export type CreateEmployeeInput = z.infer<typeof createEmployeeSchema>;
