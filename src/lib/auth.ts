@@ -6,7 +6,8 @@ import {
 } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 // import { env } from "~/env.mjs";
-import { db } from "~/lib/db";
+import { signInEmployeeUseCase } from "./use-cases/sign-in-employee";
+import { signInCustomerUseCase } from "./use-cases/sign-in-customer";
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
@@ -59,7 +60,7 @@ export const authOptions: NextAuthOptions = {
   },
   providers: [
     CredentialsProvider({
-      id: "credentials-app",
+      id: "credentials-employee",
       credentials: {
         username: { label: "Email/Celular", type: "text", placeholder: "" },
         password: { label: "Senha", type: "password" },
@@ -69,70 +70,52 @@ export const authOptions: NextAuthOptions = {
           return null;
         }
 
-        const user = await db
-          .selectFrom("BarbershopUser")
-          .innerJoin("User", "User.id", "BarbershopUser.userId")
-          .selectAll("User")
-          .select("BarbershopUser.barbershopId as barbershopId")
-          .where("BarbershopUser.entityType", "=", "EMPLOYEE")
-          .where(({ or, cmpr }) =>
-            or([
-              cmpr("User.email", "=", credentials.username),
-              cmpr("User.phone", "=", credentials.username),
-            ])
-          )
-          .executeTakeFirst();
-
-        if (!user) {
+        try {
+          const user = await signInEmployeeUseCase({
+            emailOrPhoneNumber: credentials.username,
+            password: credentials.password,
+          });
+          return {
+            id: user.id.toString(),
+            barbershopId: 1, // user.barbershopId,
+            name: user.name,
+            email: user.email,
+            image: "",
+          };
+        } catch (err) {
+          return null;
+        }
+      },
+    }),
+    CredentialsProvider({
+      id: "credentials-customer",
+      credentials: {
+        barbershop: { label: "Barbearia", type: "text" },
+        username: { label: "Email/Celular", type: "text", placeholder: "" },
+        password: { label: "Senha", type: "password" },
+      },
+      async authorize(credentials) {
+        if (!credentials) {
           return null;
         }
 
-        return {
-          id: user.id.toString(),
-          barbershopId: user.barbershopId,
-          name: user.name,
-          email: user.email,
-          image: "",
-        };
+        try {
+          const user = await signInCustomerUseCase({
+            emailOrPhoneNumber: credentials.username,
+            password: credentials.password,
+          });
+          return {
+            id: user.id.toString(),
+            barbershopId: 1,
+            name: user.name,
+            email: user.email,
+            image: "",
+          };
+        } catch (err) {
+          return null;
+        }
       },
     }),
-    // CredentialsProvider({
-    //   id: "credentials-appointments",
-    //   credentials: {
-    //     barbershop: { label: "Barbearia", type: "text" },
-    //     username: { label: "Email/Celular", type: "text", placeholder: "" },
-    //     password: { label: "Senha", type: "password" },
-    //   },
-    //   async authorize(credentials) {
-    //     if (!credentials) {
-    //       return null;
-    //     }
-
-    //     const user = await db
-    //       .selectFrom("User")
-    //       .selectAll("User")
-    //       .where("User.barbershopId", "=", Number(credentials.barbershop))
-    //       .where("User.entityType", "=", "CUSTOMER")
-    //       .where(({ or, cmpr }) =>
-    //         or([
-    //           cmpr("User.email", "=", credentials.username),
-    //           cmpr("User.phone", "=", credentials.username),
-    //         ])
-    //       )
-    //       .executeTakeFirst();
-
-    //     if (!user) {
-    //       return null;
-    //     }
-
-    //     return {
-    //       id: user.id.toString(),
-    //       name: user.name,
-    //       email: user.email,
-    //       image: "",
-    //     };
-    //   },
-    // }),
     /**
      * ...add more providers here.
      *

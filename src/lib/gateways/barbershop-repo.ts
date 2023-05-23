@@ -1,4 +1,4 @@
-import type { Barbershop } from "~/types/barbershop";
+import type { Barbershop, BarbershopConfig } from "~/types/barbershop";
 import { db } from "~/lib/db";
 
 export type GetBarbershopBySlug = (slug: string) => Promise<Barbershop>;
@@ -12,6 +12,19 @@ export const getBarbershopBySlugDB: GetBarbershopBySlug = async (
     .where("Barbershop.slug", "=", slug)
     .executeTakeFirstOrThrow();
 };
+
+export type GetBarbershopConfigByBarbershopId = (
+  barbershopId: number
+) => Promise<BarbershopConfig>;
+
+export const getBarbershopConfigByBarbershopIdDB: GetBarbershopConfigByBarbershopId =
+  async (barbershopId: number) => {
+    return await db
+      .selectFrom("BarbershopConfig")
+      .selectAll("BarbershopConfig")
+      .where("BarbershopConfig.barbershopId", "=", barbershopId)
+      .executeTakeFirstOrThrow();
+  };
 
 // Not used in use case
 export const getBarbershopSlugList = async () => {

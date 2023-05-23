@@ -24,3 +24,5 @@ const globalForDB = globalThis as unknown as {
 export const db = globalForDB.db ?? createInstance();
 
 if (env.NODE_ENV !== "production") globalForDB.db = db;
+
+export type { Selectable } from "kysely";

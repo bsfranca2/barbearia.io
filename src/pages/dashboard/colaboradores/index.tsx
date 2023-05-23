@@ -77,7 +77,7 @@ export default function EmployeesPage() {
                                 {employee.email}
                               </td>
                               <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                                {employee.phone}
+                                {employee.phoneNumber}
                               </td>
                               <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                                 {employee.roles.join(",")}

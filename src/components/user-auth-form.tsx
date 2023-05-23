@@ -32,7 +32,7 @@ export function UserAuthForm() {
   async function onSubmit(data: FormData) {
     setIsLoading(true);
 
-    const signInResult = await signIn("credentials-app", {
+    const signInResult = await signIn("credentials-employee", {
       username: data.email,
       password: data.password,
       redirect: false,

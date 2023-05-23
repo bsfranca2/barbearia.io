@@ -1,13 +1,23 @@
-import { db } from "~/lib/db";
+import type { UseCase } from "~/types/use-case";
+import {
+  type GetEmployeeServices,
+  getEmployeeServicesDB,
+} from "~/lib/gateways/employee-repo";
 
-export const getServices = async (employeeId: string) => {
-  return await db
-    .selectFrom("EmployeeService")
-    .innerJoin("Service", "Service.id", "EmployeeService.serviceId")
-    .innerJoin("Employee", "Employee.id", "EmployeeService.employeeId")
-    .where("EmployeeService.employeeId", "=", Number(employeeId))
-    .select(["EmployeeService.id", "Service.name"])
-    .where("Employee.archivedAt", "is", null)
-    .where("Employee.deletedAt", "is", null)
-    .execute();
+type GetEmployeeServicesUseCase = UseCase<
+  {
+    employeeId: number;
+  },
+  {
+    getEmployeeServices: GetEmployeeServices;
+  },
+  // TODO: Add type for this
+  Awaited<ReturnType<typeof getEmployeeServicesDB>>
+>;
+
+export const getEmployeeServicesUseCase: GetEmployeeServicesUseCase = async (
+  { employeeId },
+  { getEmployeeServices } = { getEmployeeServices: getEmployeeServicesDB }
+) => {
+  return await getEmployeeServices(employeeId);
 };

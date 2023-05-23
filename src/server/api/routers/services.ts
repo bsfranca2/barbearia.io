@@ -32,7 +32,16 @@ export const servicesRouter = createTRPCRouter({
             "Employee.id as employeeId",
             sql`LAST_INSERT_ID()`.as("serviceId"),
           ])
-          .where("Employee.barbershopId", "=", ctx.session.user.barbershopId);
+          .innerJoin(
+            "BarbershopEmployee",
+            "BarbershopEmployee.employeeId",
+            "Employee.id"
+          )
+          .where(
+            "BarbershopEmployee.barbershopId",
+            "=",
+            ctx.session.user.barbershopId
+          );
         await sql`insert into EmployeeService (employeeId, serviceId) ${selectEmployees}`.execute(
           trx
         );

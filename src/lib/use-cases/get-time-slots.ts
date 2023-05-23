@@ -1,4 +1,3 @@
-import { sql } from "kysely";
 import { db } from "~/lib/db";
 
 const PERIOD_TIME = 20;
@@ -20,9 +19,9 @@ export async function getTimeSlots(options: { barberId: number; date: Date }) {
 
   const workingHours = await db
     .selectFrom("WorkingHours")
-    .selectAll()
+    .selectAll("WorkingHours")
     .where("WorkingHours.employeeId", "=", options.barberId)
-    .where("WorkingHours.dayOfWeek", "=", sql`DAYOFWEEK(${targetDate})`)
+    .where("WorkingHours.dayOfWeek", "=", targetDate.getDay())
     .execute();
 
   const timeSlots = [];

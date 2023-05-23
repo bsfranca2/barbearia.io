@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { getBarbershopBySlugUseCase } from "~/lib/use-cases/get-barbershop-by-slug";
 import { buttonVariants } from "~/components/ui/button";
+import { getBarbershopBySlug } from "./getBarbershop";
 
 type PageProps = {
   params: {
@@ -8,9 +8,10 @@ type PageProps = {
   };
 };
 
-export default async function Page({ params }: PageProps) {
-  const { barbershop: slug } = params;
-  const barbershop = await getBarbershopBySlugUseCase({ slug });
+export default async function Page({
+  params: { barbershop: slug },
+}: PageProps) {
+  const barbershop = await getBarbershopBySlug({ slug });
 
   if (!barbershop) {
     return <h1>Barbearia não encontrada</h1>;

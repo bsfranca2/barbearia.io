@@ -3,10 +3,21 @@ export interface Barbershop {
   name: string;
   slug: string;
   addressId: number | null;
-  phone: string | null;
+  phoneNumber: string | null;
   email: string | null;
   description: string | null;
   logo: string | null;
+}
+
+export interface BarbershopConfig {
+  id: number;
+  barbershopId: number;
+  minimumBookingNotice: number;
+  minimumTimeBetweenAppointments: number;
+  beforeAppointmentBuffer: number;
+  afterAppointmentBuffer: number;
+  slotInterval: number;
+  maximumAdvanceBookDays: number;
 }
 
 export enum Roles {
@@ -18,12 +29,27 @@ export interface Employee {
   id: number;
   name: string;
   email: string;
-  phone: string;
+  emailVerifiedAt: Date | null;
+  phoneNumber: string;
+  phoneNumberVerifiedAt: Date | null;
   picture: string | null;
+  createdAt: Date;
+  updatedAt: Date | null;
+}
+
+export interface EmployeeAccount {
+  id: number;
+  employeeId: number;
+  password: string | null;
+}
+
+export interface BarbershopEmployee {
+  id: number;
   barbershopId: number;
+  employeeId: number;
+  roles: Roles[];
   archivedAt: Date | null;
   deletedAt: Date | null;
-  roles: Roles[];
 }
 
 export interface WorkingHours {
@@ -49,6 +75,6 @@ export interface EmployeeService {
   id: number;
   employeeId: number;
   serviceId: number;
+  price: string | null;
   duration: number | null;
-  price: number | null;
 }

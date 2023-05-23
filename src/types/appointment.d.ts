@@ -4,4 +4,6 @@ export interface Appointment {
   employeeServiceId: number;
   duration: number;
   date: Date;
+  createdAt: Date;
+  updatedAt: Date | null;
 }

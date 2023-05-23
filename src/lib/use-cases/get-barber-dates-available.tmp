@@ -1,0 +1,61 @@
+import type { UseCase } from "~/types/use-case";
+import {
+  type GetEmployeeById,
+  getEmployeeByIdDB,
+  type GetWorkingHoursByEmployee,
+  getWorkingHoursByEmployeeDB,
+} from "~/lib/gateways/employee-repo";
+import {
+  type GetBarbershopConfigByBarbershopId,
+  getBarbershopConfigByBarbershopIdDB,
+} from "../gateways/barbershop-repo";
+
+type GetBarberAvailableDatesUseCase = UseCase<
+  {
+    employeeId: number;
+  },
+  {
+    getEmployeeById: GetEmployeeById;
+    getWorkingHoursByEmployee: GetWorkingHoursByEmployee;
+    getBarbershopConfigByBarbershopId: GetBarbershopConfigByBarbershopId;
+  },
+  string[]
+>;
+
+// TODO: Improve, remove days that are not available(busy), and consider service time
+export const getBarberAvailableDatesUseCase: GetBarberAvailableDatesUseCase =
+  async (
+    { employeeId },
+    {
+      getEmployeeById,
+      getWorkingHoursByEmployee,
+      getBarbershopConfigByBarbershopId,
+    } = {
+      getEmployeeById: getEmployeeByIdDB,
+      getBarbershopConfigByBarbershopId: getBarbershopConfigByBarbershopIdDB,
+      getWorkingHoursByEmployee: getWorkingHoursByEmployeeDB,
+    }
+  ) => {
+    const employee = await getEmployeeById(employeeId);
+    const workingHours = await getWorkingHoursByEmployee(employeeId);
+    const barbershopConfig = await getBarbershopConfigByBarbershopId(
+      employee.barbershopId
+    );
+
+    const workingDays = workingHours.map(
+      (workingHour) => workingHour.dayOfWeek
+    );
+    const dateList = [];
+    const targetDate = new Date();
+    const currentDate = new Date(targetDate);
+    targetDate.setDate(
+      targetDate.getDate() + barbershopConfig.maximumAdvanceBookDays
+    );
+    while (currentDate < targetDate) {
+      if (workingDays.includes(currentDate.getDay()))
+        dateList.push(currentDate.toISOString());
+      currentDate.setDate(currentDate.getDate() + 1);
+    }
+
+    return dateList;
+  };
